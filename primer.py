@@ -158,14 +158,14 @@ class Biblioteca:
     def registrar_publicacion(self, codigo, titulo, autor, categoria, stock, precio, tipo):
         # Validar duplicado
         if any(p.get_codigo() == codigo for p in self.publicaciones):
-            print("❌ Ya existe una publicación con ese código.")
+            print(" Ya existe una publicación con ese código.")
             return
         if tipo.lower() == "libro":
             pub = Libro(codigo, titulo, autor, categoria, stock, precio)
         else:
             pub = Revista(codigo, titulo, autor, categoria, stock, precio)
         self.publicaciones.append(pub)
-        print("✅ Publicación registrada correctamente.")
+        print(" Publicación registrada correctamente.")
 
     # ------------------------
     # Registrar usuario
@@ -210,7 +210,7 @@ class Biblioteca:
     def devolver_libro(self, id_prestamo):
         prestamo = next((p for p in self.prestamos if p.id_prestamo == id_prestamo), None)
         if not prestamo:
-            print("❌ Préstamo no encontrado.")
+            print(" Préstamo no encontrado.")
             return
         prestamo.devolver()
         multa = prestamo.calcular_multa()
