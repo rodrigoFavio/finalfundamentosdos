@@ -16,31 +16,43 @@ class Publicacion(ABC):
         self.__veces_prestado = 0
 
     # ----- Getters -----
-    def get_codigo(self): return self.__codigo
-    def get_titulo(self): return self.__titulo
-    def get_autor(self): return self.__autor
-    def get_categoria(self): return self.__categoria
-    def get_stock(self): return self.__stock
-    def get_precio(self): return self.__precio
-    def get_total_usos(self): return self.__veces_vendido + self.__veces_prestado
+    def get_codigo(self): 
+        return self.__codigo
+    def get_titulo(self): 
+        return self.__titulo
+    def get_autor(self): 
+        return self.__autor
+    def get_categoria(self): 
+        return self.__categoria
+    def get_stock(self): 
+        return self.__stock
+    def get_precio(self): 
+        return self.__precio
+    def get_total_usos(self): 
+        return self.__veces_vendido + self.__veces_prestado
 
     # ----- Setters -----
-    def set_titulo(self, titulo): self.__titulo = titulo
-    def set_autor(self, autor): self.__autor = autor
-    def set_categoria(self, categoria): self.__categoria = categoria
+    def set_titulo(self, titulo): 
+        self.__titulo = titulo
+    def set_autor(self, autor): 
+        self.__autor = autor
+    def set_categoria(self, categoria): 
+        self.__categoria = categoria
     def set_stock(self, stock):
         if stock >= 0:
             self.__stock = stock
         else:
-            print("El stock no puede ser negativo.")
+            print(" El stock no puede ser negativo.")
     def set_precio(self, precio):
         if precio > 0:
             self.__precio = precio
         else:
-            print("El precio debe ser positivo.")
+            print(" El precio debe ser positivo.")
 
-    def aumentar_ventas(self, cantidad): self.__veces_vendido += cantidad
-    def aumentar_prestamos(self): self.__veces_prestado += 1
+    def aumentar_ventas(self, cantidad): 
+        self.__veces_vendido += cantidad
+    def aumentar_prestamos(self): 
+        self.__veces_prestado += 1
 
     @abstractmethod
     def tipo(self):
@@ -68,17 +80,21 @@ class Usuario(ABC):
         self.__correo = correo
 
     # ----- Getters -----
-    def get_dni(self): return self.__dni
-    def get_nombre(self): return self.__nombre
-    def get_correo(self): return self.__correo
+    def get_dni(self): 
+        return self.__dni
+    def get_nombre(self): 
+        return self.__nombre
+    def get_correo(self): 
+        return self.__correo
 
     # ----- Setters -----
-    def set_nombre(self, nombre): self.__nombre = nombre
+    def set_nombre(self, nombre): 
+        self.__nombre = nombre
     def set_correo(self, correo):
         if "@" in correo and "." in correo:
             self.__correo = correo
         else:
-            print("Correo inválido.")
+            print(" Correo inválido.")
 
     @staticmethod
     def validar_dni(dni):
@@ -93,11 +109,13 @@ class Usuario(ABC):
 
 
 class Estudiante(Usuario):
-    def tipo(self): return "Estudiante"
+    def tipo(self): 
+        return "Estudiante"
 
 
 class Docente(Usuario):
-    def tipo(self): return "Docente"
+    def tipo(self): 
+        return "Docente"
 
 
 # ===================================
@@ -121,6 +139,12 @@ class Prestamo:
             return 0
         atraso = (self.devuelto.date() - self.vence.date()).days
         return max(0, atraso * 1.0)  # multa de S/1 por día de retraso
+
+    def calcular_multa_actual(self):
+        """Calcula multa si el libro se devolviera hoy."""
+        hoy = datetime.now()
+        atraso = (hoy.date() - self.vence.date()).days
+        return max(0, atraso * 1.0)
 
     def __str__(self):
         estado = "Devuelto" if self.devuelto else "Prestado"
@@ -158,14 +182,14 @@ class Biblioteca:
     def registrar_publicacion(self, codigo, titulo, autor, categoria, stock, precio, tipo):
         # Validar duplicado
         if any(p.get_codigo() == codigo for p in self.publicaciones):
-            print("❌ Ya existe una publicación con ese código.")
+            print(" Ya existe una publicación con ese código.")
             return
         if tipo.lower() == "libro":
             pub = Libro(codigo, titulo, autor, categoria, stock, precio)
         else:
             pub = Revista(codigo, titulo, autor, categoria, stock, precio)
         self.publicaciones.append(pub)
-        print("✅ Publicación registrada correctamente.")
+        print(" Publicación registrada correctamente.")
 
     # ------------------------
     # Registrar usuario
@@ -191,18 +215,19 @@ class Biblioteca:
         usuario = next((u for u in self.usuarios if u.get_dni() == dni), None)
         publicacion = next((p for p in self.publicaciones if p.get_codigo() == codigo), None)
         if not usuario or not publicacion:
-            print(" Usuario o publicación no encontrados.")
-            return
+             print(" Usuario o publicación no encontrados.")
+             return
         if publicacion.get_stock() <= 0:
-            print("No hay stock disponible.")
-            return
+           print(" No hay stock disponible.")
+           return
         vence = datetime.now() + timedelta(days=7)
         prestamo = Prestamo(self.next_prestamo_id, publicacion, usuario, datetime.now(), vence)
         publicacion.set_stock(publicacion.get_stock() - 1)
         publicacion.aumentar_prestamos()
         self.prestamos.append(prestamo)
+        print(f" Préstamo registrado con ID {prestamo.id_prestamo}. Vence el {vence.date()}.")
         self.next_prestamo_id += 1
-        print(f" Préstamo registrado. Vence el {vence.date()}.")
+
 
     # ------------------------
     # Devolver libro
@@ -210,11 +235,11 @@ class Biblioteca:
     def devolver_libro(self, id_prestamo):
         prestamo = next((p for p in self.prestamos if p.id_prestamo == id_prestamo), None)
         if not prestamo:
-            print("❌ Préstamo no encontrado.")
+            print(" Préstamo no encontrado.")
             return
         prestamo.devolver()
         multa = prestamo.calcular_multa()
-        print(f"Devolución registrada. Multa: S/.{multa:.2f}")
+        print(f" Devolución registrada. Multa: S/.{multa:.2f}")
 
     # ------------------------
     # Registrar venta
@@ -223,17 +248,17 @@ class Biblioteca:
         usuario = next((u for u in self.usuarios if u.get_dni() == dni), None)
         publicacion = next((p for p in self.publicaciones if p.get_codigo() == codigo), None)
         if not usuario or not publicacion:
-            print("Usuario o publicación no encontrados.")
+            print(" Usuario o publicación no encontrados.")
             return
         if cantidad > publicacion.get_stock():
-            print("Stock insuficiente.")
+            print(" Stock insuficiente.")
             return
         venta = Venta(self.next_venta_id, usuario, publicacion, cantidad)
         publicacion.set_stock(publicacion.get_stock() - cantidad)
         publicacion.aumentar_ventas(cantidad)
         self.ventas.append(venta)
         self.next_venta_id += 1
-        print(f"Venta registrada. Total: S/.{venta.total:.2f}")
+        print(f" Venta registrada. Total: S/.{venta.total:.2f}")
 
     # ------------------------
     # Reportes y listados
@@ -245,9 +270,9 @@ class Biblioteca:
     def ver_stock_bajo(self):
         bajos = [p for p in self.publicaciones if p.get_stock() < 3]
         if not bajos:
-            print("No hay publicaciones con stock bajo.")
+            print(" No hay publicaciones con stock bajo.")
         else:
-            print("Publicaciones con stock bajo:")
+            print(" Publicaciones con stock bajo:")
             for p in bajos:
                 print(" ", p)
 
