@@ -331,3 +331,48 @@ def menu():
 # ===================================
 if __name__ == "__main__":
     menu()
+
+===================================
+CLASES DE OPERACIONES
+===================================
+class Prestamo:
+    def init(self, id_prestamo, publicacion, usuario, fecha, vence):
+        self.id_prestamo = id_prestamo
+        self.publicacion = publicacion
+        self.usuario = usuario
+        self.fecha = fecha
+        self.vence = vence
+        self.devuelto = None
+
+    def devolver(self):
+        self.devuelto = datetime.now()
+        self.publicacion.set_stock(self.publicacion.get_stock() + 1)
+
+    def calcular_multa(self):
+        if not self.devuelto:
+            return 0
+        atraso = (self.devuelto.date() - self.vence.date()).days
+        return max(0, atraso * 1.0)  # multa de S/1 por día de retraso
+
+    def calcular_multa_actual(self):
+        """Calcula multa si el libro se devolviera hoy."""
+        hoy = datetime.now()
+        atraso = (hoy.date() - self.vence.date()).days
+        return max(0, atraso * 1.0)
+
+    def str(self):
+        estado = "Devuelto" if self.devuelto else "Prestado"
+        return f"[{self.id_prestamo}] {self.publicacion.get_titulo()} → {self.usuario.get_nombre()} | {estado}"
+
+
+class Venta:
+    def init(self, id_venta, usuario, publicacion, cantidad):
+        self.id_venta = id_venta
+        self.usuario = usuario
+        self.publicacion = publicacion
+        self.cantidad = cantidad
+        self.fecha = datetime.now()
+        self.total = publicacion.get_precio() * cantidad
+
+    def str(self):
+        return f"[{self.id_venta}] {self.publicacion.get_titulo()} x{self.cantidad} → {self.usuario.get_nombre()} | Total: S/.{self.total:.2f}"
